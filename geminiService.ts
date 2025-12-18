@@ -1,8 +1,6 @@
 
 import { GoogleGenAI, Modality } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-
 // Decode base64 to bytes
 function decode(base64: string) {
   const binaryString = atob(base64);
@@ -36,6 +34,16 @@ async function decodeAudioData(
 
 export const playAudio = async (text: string) => {
   try {
+    // Check if API_KEY is available to avoid unexpected crashes
+    const apiKey = typeof process !== 'undefined' ? process.env.API_KEY : '';
+    
+    if (!apiKey) {
+      throw new Error("API Key not found");
+    }
+
+    // Initialize AI inside the function call to prevent top-level script evaluation errors
+    const ai = new GoogleGenAI({ apiKey });
+
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
       contents: [{ parts: [{ text: `Speak at 0.9 speed: ${text}` }] }],
@@ -66,7 +74,7 @@ export const playAudio = async (text: string) => {
     source.start();
   } catch (error) {
     console.error("Audio playback error:", error);
-    // Fallback to browser TTS if Gemini fails
+    // Fallback to browser TTS if Gemini fails or is not configured
     const msg = new SpeechSynthesisUtterance(text);
     msg.lang = 'en-US';
     msg.rate = 0.9;
