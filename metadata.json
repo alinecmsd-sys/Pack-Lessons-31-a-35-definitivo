@@ -1,0 +1,7 @@
+{
+  "name": "Fluentify English - Curso Interativo",
+  "description": "Um aplicativo moderno e interativo para aprender inglês com lições focadas em gramática, vocabulário e prática de áudio.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
